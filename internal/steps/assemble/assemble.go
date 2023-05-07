@@ -40,7 +40,7 @@ type Msg int
 const (
 	msgInputFilesLoaded Msg = iota
 	msgInputFilesSorted
-	MsgNext
+	MsgDone
 )
 
 func (a *Model) loadInputFiles() tea.Msg {
@@ -79,7 +79,7 @@ func (a *Model) orderInputFiles() tea.Msg {
 }
 
 func (a *Model) next() tea.Msg {
-	return MsgNext
+	return MsgDone
 }
 
 func (a *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {

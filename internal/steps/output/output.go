@@ -42,11 +42,11 @@ func (m *Model) Init() tea.Cmd {
 type Msg int
 
 const (
-	MsgNext Msg = iota
+	MsgDone Msg = iota
 )
 
 func (*Model) next() tea.Msg {
-	return MsgNext
+	return MsgDone
 }
 
 func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {

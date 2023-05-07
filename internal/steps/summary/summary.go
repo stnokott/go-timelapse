@@ -20,12 +20,12 @@ type Model struct {
 type Msg int
 
 const (
-	// MsgNext signals that this step is finished
-	MsgNext Msg = iota
+	// MsgDone signals that this step is finished
+	MsgDone Msg = iota
 )
 
 func (*Model) next() tea.Msg {
-	return MsgNext
+	return MsgDone
 }
 
 func (m *Model) body() string {

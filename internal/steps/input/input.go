@@ -58,7 +58,7 @@ type Msg int
 
 const (
 	msgInputDirsLoaded Msg = iota
-	MsgNext
+	MsgDone
 )
 
 func (s *Model) loadInputDir() tea.Msg {
@@ -94,8 +94,8 @@ func (s *Model) Init() tea.Cmd {
 	return tea.Batch(s.initSpinner.Tick, s.loadInputDir)
 }
 
-func (s *Model) next() tea.Msg {
-	return MsgNext
+func (*Model) next() tea.Msg {
+	return MsgDone
 }
 
 // Update handles I/O for this step.

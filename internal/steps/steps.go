@@ -44,27 +44,27 @@ func (m *Manager) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	stepIndexBefore := m.stepIndex
 	switch msg := msg.(type) {
 	case input.Msg:
-		if msg == input.MsgNext {
+		if msg == input.MsgDone {
 			m.stepIndex++
 		}
 	case output.Msg:
-		if msg == output.MsgNext {
+		if msg == output.MsgDone {
 			m.stepIndex++
 		}
 	case timerange.Msg:
-		if msg == timerange.MsgNext {
+		if msg == timerange.MsgDone {
 			m.stepIndex++
 		}
 	case assemble.Msg:
-		if msg == assemble.MsgNext {
+		if msg == assemble.MsgDone {
 			m.stepIndex++
 		}
 	case framerate.Msg:
-		if msg == framerate.MsgNext {
+		if msg == framerate.MsgDone {
 			m.stepIndex++
 		}
 	case summary.Msg:
-		if msg == summary.MsgNext {
+		if msg == summary.MsgDone {
 			m.stepIndex++
 		}
 	}
