@@ -141,5 +141,7 @@ func (s *Model) View() string {
 	} else {
 		component = " " + s.initSpinner.View() + " Analyzing input folders... "
 	}
-	return style.Base.Render(component) + "\n"
+	return style.Border.Render("Folders in "+config.ImagesInputRootDir) +
+		"\n" +
+		style.Border.Render(component)
 }

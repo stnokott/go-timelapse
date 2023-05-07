@@ -127,9 +127,10 @@ func (m *Model) View() string {
 			style.Emphasis.Render(m.to.Format(time.DateTime)),
 		)
 	}
-	return style.Base.Render(
+	return style.Border.Render(
 		component,
-		"\n"+style.Background.Render(m.help()),
+		"\n",
+		style.Background.Render(m.help()),
 		errString,
 	)
 }

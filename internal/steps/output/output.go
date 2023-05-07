@@ -78,5 +78,5 @@ func (m *Model) View() string {
 	if m.validationErr != nil {
 		errString = fmt.Sprintf("\n\n%s: %v", style.Err.Render("ERROR"), m.validationErr)
 	}
-	return style.Base.Render(m.textInput.View()+".mp4", errString) + "\n"
+	return style.Border.Render(m.textInput.View()+".mp4", errString)
 }

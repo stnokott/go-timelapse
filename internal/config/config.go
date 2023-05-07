@@ -21,9 +21,9 @@ var Cfg = config{}
 
 // TODO: change to Linux once ready for Docker
 const (
-	ImagesInputRootDir string = "F:/timelapse/input"
+	ImagesInputRootDir string = "D:/timelapse/input"
 	// ImagesInputRootDir  string = "Y:/"
-	VideosOutputRootDir string = "F:/timelapse/output"
+	VideosOutputRootDir string = "D:/timelapse/output"
 )
 
 // Init prepares the required in- and output directories.

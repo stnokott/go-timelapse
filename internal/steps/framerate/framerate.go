@@ -133,8 +133,10 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 // View renders the model.
 func (m *Model) View() string {
+	var rendered string
 	switch m.currentTask {
 	case taskChooseMode:
+		// CHOOSING SELECTION MODE
 		var b strings.Builder
 		for i, model := range selectionModels {
 			// render emphasised if selected
@@ -145,11 +147,9 @@ func (m *Model) View() string {
 			}
 			b.WriteString("\n  " + style.Background.Render(model.Description) + "\n")
 		}
-		return style.Base.Render(
-			"Choose framerate selection mode:\n",
-			b.String(),
-		)
+		rendered = "Choose framerate selection mode:\n" + b.String()
 	case taskInput:
+		// INPUTTING FRAMERATE
 		errString := ""
 		if m.err != nil {
 			errString = fmt.Sprintf(
@@ -158,23 +158,21 @@ func (m *Model) View() string {
 				m.err,
 			)
 		}
-		return style.Base.Render(
-			m.textInput.View(),
-			style.Background.Render("\n(<q> to go back to mode selection)"),
-			errString,
-		)
+		rendered = m.textInput.View() +
+			style.Background.Render("\n(<q> to go back to mode selection)") +
+			errString
 	default:
 		// confirm predicted total duration
-		return style.Base.Render(
-			fmt.Sprintf(
-				"Will continue with this config:\n"+
-					"Framerate:                     %s \n"+
-					"Approx. output video duration: %s \n"+
-					"\nContinue?",
-				style.Emphasis.Render(fmt.Sprintf("%.2f", config.Cfg.ImgsPerSecond)),
-				style.Emphasis.Render(m.totalDurationPrediction.String()),
-			),
-			"\n"+style.Background.Render("(press <y> or <n>)"),
-		)
+		rendered = fmt.Sprintf(
+			"Will continue with this config:\n"+
+				"Framerate:                     %s \n"+
+				"Approx. output video duration: %s \n"+
+				"\nContinue?",
+			style.Emphasis.Render(fmt.Sprintf("%.2f", config.Cfg.ImgsPerSecond)),
+			style.Emphasis.Render(m.totalDurationPrediction.String()),
+		) +
+			"\n" +
+			style.Background.Render("(press <y> or <n>)")
 	}
+	return style.Border.Render(rendered)
 }

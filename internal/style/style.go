@@ -3,11 +3,13 @@ package style
 
 import "github.com/charmbracelet/lipgloss"
 
-// Base is the style every root component should use
-var Base = lipgloss.NewStyle().
+// Border adds a border to the rendered string
+var Border = lipgloss.NewStyle().
 	BorderStyle(lipgloss.NormalBorder()).
-	BorderForeground(lipgloss.Color("240")).
-	Margin(1, 1)
+	BorderForeground(lipgloss.Color("240"))
+
+// Margin adds a 1 margin to all edges
+var Margin = lipgloss.NewStyle().Margin(1)
 
 // Err is used for displaying error messages
 var Err = lipgloss.NewStyle().

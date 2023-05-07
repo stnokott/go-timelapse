@@ -8,6 +8,7 @@ import (
 	"github.com/stnokott/go-timelapse/internal/steps/input"
 	"github.com/stnokott/go-timelapse/internal/steps/output"
 	"github.com/stnokott/go-timelapse/internal/steps/timerange"
+	"github.com/stnokott/go-timelapse/internal/style"
 )
 
 // Manager handles the flow between the steps
@@ -76,5 +77,5 @@ func (m *Manager) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 // View renders the model
 func (m *Manager) View() string {
-	return m.steps[m.stepIndex].View()
+	return style.Margin.Render(m.steps[m.stepIndex].View(), "\n")
 }

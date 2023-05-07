@@ -123,12 +123,11 @@ func (a *Model) View() string {
 	} else {
 		task = "Sorting images"
 	}
-	return style.Base.Render(
-		fmt.Sprintf(
-			" %s %s...",
-			a.spinner.View(),
-			task,
-		),
-		errorString,
-	)
+	return fmt.Sprintf(
+		" %s %s...",
+		a.spinner.View(),
+		task,
+	) +
+		"\n" +
+		errorString
 }
