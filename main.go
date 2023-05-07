@@ -12,14 +12,6 @@ func main() {
 		panic(err)
 	}
 
-	// TODO: remove
-	/*
-		config.Cfg.AbsInputDir = "F:/timelapse/input/MeeriTimelapse"
-		config.Cfg.AbsOutpuFilepath = "F:/timelapse/output/test.mp4"
-		config.Cfg.TimeFrom = time.Date(2023, time.April, 26, 20, 0, 0, 0, time.Local)
-		config.Cfg.TimeTo = time.Date(2023, time.April, 27, 11, 0, 0, 0, time.Local)
-	*/
-
 	manager := steps.NewManager()
 
 	if _, err := tea.NewProgram(manager).Run(); err != nil {

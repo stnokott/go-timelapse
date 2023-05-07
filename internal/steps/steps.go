@@ -7,6 +7,7 @@ import (
 	"github.com/stnokott/go-timelapse/internal/steps/framerate"
 	"github.com/stnokott/go-timelapse/internal/steps/input"
 	"github.com/stnokott/go-timelapse/internal/steps/output"
+	"github.com/stnokott/go-timelapse/internal/steps/summary"
 	"github.com/stnokott/go-timelapse/internal/steps/timerange"
 	"github.com/stnokott/go-timelapse/internal/style"
 )
@@ -26,6 +27,7 @@ func NewManager() *Manager {
 			timerange.NewModel(),
 			assemble.NewModel(),
 			framerate.NewModel(),
+			&summary.Model{},
 		},
 		stepIndex: 0,
 	}
@@ -61,10 +63,15 @@ func (m *Manager) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if msg == framerate.MsgNext {
 			m.stepIndex++
 		}
+	case summary.Msg:
+		if msg == summary.MsgNext {
+			m.stepIndex++
+		}
 	}
 	if m.stepIndex >= len(m.steps) {
 		// no more steps left
-		return m, tea.Println("TODO: end of app flow reached")
+		m.stepIndex = len(m.steps) - 1 // needed to render Println
+		return m, tea.Sequence(tea.Println("TODO: end of app flow reached"), tea.Quit)
 	}
 	// changed step, need to initialize new step
 	if stepIndexBefore != m.stepIndex {
