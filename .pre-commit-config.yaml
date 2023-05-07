@@ -1,9 +1,5 @@
 fail_fast: true
 repos:
-  - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
-    rev: v9.4.0
-    hooks:
-      - id: commitlint
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: 0.22.0
     hooks:

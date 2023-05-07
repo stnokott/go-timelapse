@@ -4,6 +4,7 @@ linters:
   disable-all: true
   enable:
     - errcheck
+    - gocritic
     - gosimple
     - govet
     - ineffassign
@@ -22,6 +23,9 @@ linters-settings:
     check-blank: true
   govet:
     check-shadowing: true
+    enable-all: true
+    disable:
+      - fieldalignment
   goconst:
     match-constant: true
     min-len: 3
