@@ -7,6 +7,7 @@ import (
 	"github.com/stnokott/go-timelapse/internal/steps/framerate"
 	"github.com/stnokott/go-timelapse/internal/steps/input"
 	"github.com/stnokott/go-timelapse/internal/steps/output"
+	"github.com/stnokott/go-timelapse/internal/steps/render"
 	"github.com/stnokott/go-timelapse/internal/steps/summary"
 	"github.com/stnokott/go-timelapse/internal/steps/timerange"
 	"github.com/stnokott/go-timelapse/internal/style"
@@ -28,6 +29,7 @@ func NewManager() *Manager {
 			assemble.NewModel(),
 			framerate.NewModel(),
 			&summary.Model{},
+			render.NewModel(),
 		},
 		stepIndex: 0,
 	}
@@ -65,6 +67,10 @@ func (m *Manager) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case summary.Msg:
 		if msg == summary.MsgDone {
+			m.stepIndex++
+		}
+	case render.Msg:
+		if msg == render.MsgDone {
 			m.stepIndex++
 		}
 	}

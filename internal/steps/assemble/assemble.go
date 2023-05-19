@@ -31,8 +31,8 @@ func NewModel() *Model {
 	return &Model{spinner: spin}
 }
 
-func (a *Model) Init() tea.Cmd {
-	return tea.Batch(a.spinner.Tick, a.loadInputFiles)
+func (m *Model) Init() tea.Cmd {
+	return tea.Batch(m.spinner.Tick, m.loadInputFiles)
 }
 
 type Msg int
@@ -43,7 +43,7 @@ const (
 	MsgDone
 )
 
-func (a *Model) loadInputFiles() tea.Msg {
+func (m *Model) loadInputFiles() tea.Msg {
 	entries, err := os.ReadDir(config.Cfg.AbsInputDir)
 	if err != nil {
 		return err
@@ -53,22 +53,22 @@ func (a *Model) loadInputFiles() tea.Msg {
 			continue
 		}
 		name := entry.Name()
-		a.filenames = append(a.filenames, name)
+		m.filenames = append(m.filenames, name)
 	}
 	return msgInputFilesLoaded
 }
 
-func (a *Model) orderInputFiles() tea.Msg {
-	ctimes := make(map[string]time.Time, len(a.filenames))
-	for _, filename := range a.filenames {
+func (m *Model) orderInputFiles() tea.Msg {
+	ctimes := make(map[string]time.Time, len(m.filenames))
+	for _, filename := range m.filenames {
 		fi, err := os.Stat(filepath.Join(config.Cfg.AbsInputDir, filename))
 		if err != nil {
 			return err
 		}
 		ctimes[filename] = fi.ModTime()
 	}
-	sort.Slice(a.filenames, func(i, j int) bool {
-		iName, jName := a.filenames[i], a.filenames[j]
+	sort.Slice(m.filenames, func(i, j int) bool {
+		iName, jName := m.filenames[i], m.filenames[j]
 		iCtime, jCtime := ctimes[iName], ctimes[jName]
 		if iCtime.Equal(jCtime) {
 			return strings.Compare(iName, jName) < 0
@@ -78,54 +78,54 @@ func (a *Model) orderInputFiles() tea.Msg {
 	return msgInputFilesSorted
 }
 
-func (a *Model) next() tea.Msg {
+func (m *Model) next() tea.Msg {
 	return MsgDone
 }
 
-func (a *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "q", "ctrl+c":
-			return a, tea.Quit
+			return m, tea.Quit
 		}
 	case Msg:
 		switch msg {
 		case msgInputFilesLoaded:
-			a.filesLoaded = true
-			return a, a.orderInputFiles
+			m.filesLoaded = true
+			return m, m.orderInputFiles
 		case msgInputFilesSorted:
-			config.Cfg.ImageNamesSorted = a.filenames
-			return a, a.next
+			config.Cfg.ImageNamesSorted = m.filenames
+			return m, m.next
 		}
 	case error:
-		a.err = msg
-		return a, tea.Quit
+		m.err = msg
+		return m, tea.Quit
 	}
 
 	var cmd tea.Cmd
-	a.spinner, cmd = a.spinner.Update(msg)
-	return a, cmd
+	m.spinner, cmd = m.spinner.Update(msg)
+	return m, cmd
 }
 
-func (a *Model) View() string {
+func (m *Model) View() string {
 	errorString := ""
-	if a.err != nil {
+	if m.err != nil {
 		errorString = fmt.Sprintf(
 			"\n\n%s: %v",
 			style.Err.Render("ERROR"),
-			a.err,
+			m.err,
 		)
 	}
 	var task string
-	if !a.filesLoaded {
+	if !m.filesLoaded {
 		task = "Assembling image list"
 	} else {
 		task = "Sorting images"
 	}
 	return fmt.Sprintf(
 		" %s %s...",
-		a.spinner.View(),
+		m.spinner.View(),
 		task,
 	) +
 		"\n" +
