@@ -16,13 +16,16 @@ import (
 	"github.com/stnokott/go-timelapse/internal/style"
 )
 
+// Model is the assembly model
 type Model struct {
-	err         error
-	filenames   []string
-	spinner     spinner.Model
-	filesLoaded bool
+	err             error
+	fileModTimes    map[string]time.Time
+	sortedFilenames []string
+	spinner         spinner.Model
+	filesLoaded     bool
 }
 
+// NewModel returns a new Model instance
 func NewModel() *Model {
 	spin := spinner.New()
 	spin.Spinner = spinner.Points
@@ -31,15 +34,18 @@ func NewModel() *Model {
 	return &Model{spinner: spin}
 }
 
+// Init initializes this step
 func (m *Model) Init() tea.Cmd {
 	return tea.Batch(m.spinner.Tick, m.loadInputFiles)
 }
 
+// Msg is used for issuing commands between updates
 type Msg int
 
 const (
 	msgInputFilesLoaded Msg = iota
 	msgInputFilesSorted
+	// MsgDone signals that this step is finished
 	MsgDone
 )
 
@@ -48,28 +54,35 @@ func (m *Model) loadInputFiles() tea.Msg {
 	if err != nil {
 		return err
 	}
+	m.fileModTimes = make(map[string]time.Time, 1000)
 	for _, entry := range entries {
 		if entry.IsDir() {
 			continue
 		}
 		name := entry.Name()
-		m.filenames = append(m.filenames, name)
+		fi, err := os.Stat(filepath.Join(config.Cfg.AbsInputDir, name))
+		if err != nil {
+			return err
+		}
+		modTime := fi.ModTime()
+		// filter out files not in configured time range
+		if (modTime.After(config.Cfg.TimeFrom) && modTime.Before(config.Cfg.TimeTo)) || modTime.Equal(config.Cfg.TimeFrom) || modTime.Equal(config.Cfg.TimeTo) {
+			m.fileModTimes[name] = modTime
+		}
 	}
 	return msgInputFilesLoaded
 }
 
-func (m *Model) orderInputFiles() tea.Msg {
-	ctimes := make(map[string]time.Time, len(m.filenames))
-	for _, filename := range m.filenames {
-		fi, err := os.Stat(filepath.Join(config.Cfg.AbsInputDir, filename))
-		if err != nil {
-			return err
-		}
-		ctimes[filename] = fi.ModTime()
+func (m *Model) sortInputFiles() tea.Msg {
+	m.sortedFilenames = make([]string, len(m.fileModTimes))
+	i := 0
+	for k := range m.fileModTimes {
+		m.sortedFilenames[i] = k
+		i++
 	}
-	sort.Slice(m.filenames, func(i, j int) bool {
-		iName, jName := m.filenames[i], m.filenames[j]
-		iCtime, jCtime := ctimes[iName], ctimes[jName]
+	sort.Slice(m.sortedFilenames, func(i, j int) bool {
+		iName, jName := m.sortedFilenames[i], m.sortedFilenames[j]
+		iCtime, jCtime := m.fileModTimes[iName], m.fileModTimes[jName]
 		if iCtime.Equal(jCtime) {
 			return strings.Compare(iName, jName) < 0
 		}
@@ -82,6 +95,7 @@ func (m *Model) next() tea.Msg {
 	return MsgDone
 }
 
+// Update handles I/O for the model
 func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
@@ -93,9 +107,9 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg {
 		case msgInputFilesLoaded:
 			m.filesLoaded = true
-			return m, m.orderInputFiles
+			return m, m.sortInputFiles
 		case msgInputFilesSorted:
-			config.Cfg.ImageNamesSorted = m.filenames
+			config.Cfg.ImageNamesSorted = m.sortedFilenames
 			return m, m.next
 		}
 	case error:
@@ -108,6 +122,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
+// View renders the model
 func (m *Model) View() string {
 	errorString := ""
 	if m.err != nil {
